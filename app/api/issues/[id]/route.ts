@@ -1,13 +1,17 @@
 import { issueSchema } from "@/app/validationSchemas";
 import prisma from "@/prisma/client";
-import { error } from "console";
 import { NextRequest, NextResponse } from "next/server";
+
+type Params = Promise<{ id: string }>;
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  segmentData: { params: Params }
 ) {
   const body = await request.json();
+  const params = await segmentData.params;
+  const issueId = params.id;
+  console.log(issueId)
 
   const validation = issueSchema.safeParse(body);
 
@@ -15,7 +19,7 @@ export async function PATCH(
     return NextResponse.json(validation.error.format(), { status: 400 });
 
   const issue = await prisma.issue.findUnique({
-    where: { id: parseInt(params.id) },
+    where: { id: parseInt(issueId) },
   });
 
   if (!issue)
@@ -31,3 +35,4 @@ export async function PATCH(
 
   return NextResponse.json(updatedIssue);
 }
+

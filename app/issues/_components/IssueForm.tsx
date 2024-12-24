@@ -4,15 +4,15 @@ import ErrorMessage from "@/app/components/ErrorMessage";
 import Spinner from "@/app/components/Spinner";
 import { issueSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Issue } from "@prisma/client";
 import { Button, Callout, TextField } from "@radix-ui/themes";
 import axios from "axios";
 import "easymde/dist/easymde.min.css";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import dynamic from "next/dynamic";
 import { z } from "zod";
-import { Issue } from "@prisma/client";
 
 const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
   ssr: false,
@@ -46,6 +46,7 @@ const IssueForm = ({ issue }: Props) => {
       router.push("/issues");
     } catch (error) {
       setIsSubmitting(false);
+      console.log(error)
       setError("An unexpected error occurred");
     }
   });
