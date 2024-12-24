@@ -1,6 +1,7 @@
 import { issueSchema } from "@/app/validationSchemas";
 import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import delay from "delay";
 
 type Params = Promise<{ id: string }>;
 
@@ -40,7 +41,6 @@ export async function DELETE(
     request: NextRequest,
     segmentData: { params: Params }
 ) {
-  // const body = await request.json();
   const params = await segmentData.params;
   const issueId = params.id;
 
