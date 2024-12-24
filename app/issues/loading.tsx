@@ -7,7 +7,6 @@ const LoadingIssuesPage = () => {
   return (
     <div>
       <IssueActions />
-
       <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
