@@ -1,10 +1,11 @@
 import Navbar from "@/app/Navbar";
-import {Container, Theme} from "@radix-ui/themes";
+import { Container, Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/app/auth/Provider";
+import QueryClientProvider from "@/app/QueryClientProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,19 +32,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
+        <QueryClientProvider>
+          <AuthProvider>
+            <Theme accentColor="blue">
+              <Navbar />
+              <main className="p-5">
+                <Container>{children}</Container>
+              </main>
 
-        <Theme accentColor="blue">
-          <Navbar />
-          <main className="p-5">
-            <Container>
-              {children}
-            </Container>
-          </main>
-
-          {/* <ThemePanel /> */}
-        </Theme>
-        </AuthProvider>
+              {/* <ThemePanel /> */}
+            </Theme>
+          </AuthProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );
