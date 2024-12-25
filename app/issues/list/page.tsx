@@ -1,10 +1,36 @@
 import prisma from "@/prisma/client";
 import { Table } from "@radix-ui/themes";
 import IssueActions from "./IssueActions";
-import { Link, IssueStatusBadge} from '../../components'
+import { IssueStatusBadge } from "../../components";
+import { Issue, Status } from "@prisma/client";
+import Link from "next/link";
+import { ArrowUpIcon } from "@radix-ui/react-icons";
 
-const IssuePage = async () => {
-  const issues = await prisma.issue.findMany();
+interface Props {
+  searchParams: Promise<{ status: Status; orderBy: keyof Issue }>;
+}
+
+const IssuePage = async ({ searchParams }: Props) => {
+  const columns: { label: string; value: keyof Issue; className?: string }[] = [
+    { label: "Issue", value: "title" },
+    { label: "Status", value: "status", className: "hidden md:table-cell" },
+    { label: "Created", value: "createdAt", className: "hidden md:table-cell" },
+  ];
+
+  const params = await searchParams;
+  const status = params.status;
+  const statuses = Object.values(Status);
+  const validStatus = statuses.includes(status) ? status : undefined;
+  const orderBy = columns.map((column) => column.value).includes(params.orderBy)
+    ? { [params.orderBy]: "asc" }
+    : undefined;
+
+  const issues = await prisma.issue.findMany({
+    where: {
+      status: validStatus,
+    },
+    orderBy: orderBy,
+  });
 
   return (
     <div>
@@ -13,13 +39,23 @@ const IssuePage = async () => {
       <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeaderCell>Issue</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className="hidden md:table-cell">
-              Status
-            </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className="hidden md:table-cell">
-              Created
-            </Table.ColumnHeaderCell>
+            {columns.map((column) => (
+              <Table.ColumnHeaderCell
+                key={column.value}
+                className={column.className}
+              >
+                <Link
+                  href={{
+                    query: { ...params, orderBy: column.value },
+                  }}
+                >
+                  {column.label}
+                </Link>
+                {column.value === params.orderBy && (
+                  <ArrowUpIcon className="inline-block" />
+                )}
+              </Table.ColumnHeaderCell>
+            ))}
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -45,6 +81,6 @@ const IssuePage = async () => {
   );
 };
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 export default IssuePage;
